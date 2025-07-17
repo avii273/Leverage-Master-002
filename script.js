@@ -1,4 +1,7 @@
 document.addEventListener('DOMContentLoaded', async function() {
+    // Import backend functions
+    const { accessKeys, loadData, saveData } = await import('./keys.js');
+    
     // DOM Elements
     const userNameInput = document.getElementById('userNameInput');
     const userEmail = document.getElementById('userEmail');
@@ -63,7 +66,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     // Initialize
     initTheme();
     checkNetworkStatus();
-    await loadData();
+    await loadAppData();
     await checkSession();
     
     // Event Listeners
@@ -313,7 +316,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         currentSession = newSession;
         
         // Save to storage
-        await saveData();
+        await saveData(users, sessions);
     }
     
     function generateDeviceId() {
@@ -379,7 +382,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         if (currentSession) {
             currentSession.active = false;
             currentSession.logout_time = new Date().toISOString();
-            await saveData();
+            await saveData(users, sessions);
         }
         
         // Clear current user
@@ -522,7 +525,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         closeImageUpload();
     }
     
-    async function loadData() {
+    async function loadAppData() {
         try {
             const data = await loadData();
             users = data.users || [];
@@ -559,17 +562,6 @@ document.addEventListener('DOMContentLoaded', async function() {
         editIcon.innerHTML = '<i class="fas fa-pen"></i>';
         editIcon.addEventListener('click', openImageUpload);
         profileImage.appendChild(editIcon);
-    }
-    
-    async function saveData() {
-        try {
-            await saveData(users, sessions);
-        } catch (error) {
-            console.error("Error saving data:", error);
-            // Fallback to localStorage
-            localStorage.setItem('users', JSON.stringify(users));
-            localStorage.setItem('sessions', JSON.stringify(sessions));
-        }
     }
     
     async function updateAdminDashboard() {
@@ -648,7 +640,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         if (!user) return;
         
         user[field] = value;
-        await saveData();
+        await saveData(users, sessions);
         
         if (currentUser && currentUser.key === key) {
             if (field === 'name') {
@@ -665,7 +657,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         if (!user) return;
         
         user.status = user.status === 'blocked' ? 'active' : 'blocked';
-        await saveData();
+        await saveData(users, sessions);
         await updateAdminDashboard();
     }
     
@@ -673,7 +665,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         if (confirm('Are you sure you want to delete this key?')) {
             users = users.filter(u => u.key !== key);
             sessions = sessions.filter(s => s.key !== key);
-            await saveData();
+            await saveData(users, sessions);
             await updateAdminDashboard();
         }
     }
@@ -720,7 +712,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         }
         
         user.name = newNameValue;
-        await saveData();
+        await saveData(users, sessions);
         
         profileName.textContent = newNameValue;
         userNameDisplay.textContent = newNameValue;
@@ -761,7 +753,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         }
         
         user.email = newEmailValue;
-        await saveData();
+        await saveData(users, sessions);
         
         profileEmail.textContent = newEmailValue;
         
