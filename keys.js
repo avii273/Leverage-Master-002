@@ -1,5 +1,5 @@
 // Configuration for GitHub backend
-const GITHUB_TOKEN = 'your_personal_access_token'; // Create this in GitHub settings
+const GITHUB_TOKEN = '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'; // Create this in GitHub settings
 const DATA_REPO = 'avii273/Leverage-Master-002'; // Your private repo for data
 const KEYS_PATH = 'data/keys.json'; // Path to your keys file
 const USERS_PATH = 'data/users.json'; // Path to your users file
